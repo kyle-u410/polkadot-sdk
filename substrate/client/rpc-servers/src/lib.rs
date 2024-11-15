@@ -157,12 +157,7 @@ where
 					.max_response_body_size(max_payload_out_mb.saturating_mul(MEGABYTE))
 					.max_connections(max_connections)
 					.max_subscriptions_per_connection(max_subscriptions_per_connection)
-					.enable_ws_ping(
-						PingConfig::new()
-							.ping_interval(Duration::from_secs(30))
-							.inactive_limit(Duration::from_secs(60))
-							.max_failures(3),
-					)
+					.enable_ws_ping(PingConfig::new().ping_interval(Duration::from_secs(30)))
 					.set_http_middleware(http_middleware)
 					.set_message_buffer_capacity(max_buffer_capacity_per_connection)
 					.set_batch_request_config(batch_config)
@@ -215,8 +210,9 @@ where
 								MiddlewareLayer::new()
 									.with_metrics(Metrics::new(metrics, transport_label)),
 							),
-							(None, Some(rate_limit)) =>
-								Some(MiddlewareLayer::new().with_rate_limit_per_minute(rate_limit)),
+							(None, Some(rate_limit)) => {
+								Some(MiddlewareLayer::new().with_rate_limit_per_minute(rate_limit))
+							},
 							(Some(metrics), Some(rate_limit)) => Some(
 								MiddlewareLayer::new()
 									.with_metrics(Metrics::new(metrics, transport_label))
